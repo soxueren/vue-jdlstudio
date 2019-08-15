@@ -8,6 +8,7 @@ import "codemirror/addon/hint/show-hint.css";
 import "./assets/css/show-hint-jdl.css";
 import "./assets/css/solarized.jdl.css";
 
+import "core-js";
 import "jhipster-core";
 
 Vue.config.productionTip = false;

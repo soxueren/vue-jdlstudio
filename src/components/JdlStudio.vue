@@ -16,18 +16,23 @@
   </div>
 </template>
 <script>
-import "core-js";
 import "codemirror/theme/base16-dark.css";
+import "codemirror/lib/codemirror.css";
+import "codemirror/addon/hint/show-hint.css";
+import "./css/show-hint-jdl.css";
+import "./css/solarized.jdl.css";
+
 import _ from "lodash";
-import CodeMirror from "../assets/js/codemirror/codemirror.custom";
-import nomnoml from "../assets/js/nomnoml/nomnoml.custom";
-import skanaar from "../assets/js/nomnoml/shannar.custom";
+import CodeMirror from "./js/codemirror/codemirror.custom";
+import nomnoml from "./js/nomnoml/nomnoml.custom";
+import skanaar from "./js/nomnoml/shannar.custom";
 
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/hint/show-hint";
 
 export default {
+  name: "jdlstudio",
   data() {
     return {
       cmOptions: {

@@ -16,8 +16,12 @@
   </div>
 </template>
 <script>
-import "core-js";
 import "codemirror/theme/base16-dark.css";
+import "codemirror/lib/codemirror.css";
+import "codemirror/addon/hint/show-hint.css";
+import "./css/show-hint-jdl.css";
+import "./css/solarized.jdl.css";
+
 import _ from "lodash";
 import CodeMirror from "./js/codemirror/codemirror.custom";
 import nomnoml from "./js/nomnoml/nomnoml.custom";
