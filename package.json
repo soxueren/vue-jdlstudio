@@ -38,11 +38,13 @@
     "codemirror": "^5.48.2",
     "core-js": "2.6.9",
     "dagre": "0.4.5",
-    "element-ui": "^2.7.2",
+    "element-theme-chalk": "^2.11.1",
+    "element-ui": "^2.11.1",
     "file-saver": "^2.0.0",
     "jhipster-core": "3.6.10",
     "lodash": "^4.17.15",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "vue-localstorage": "^0.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",

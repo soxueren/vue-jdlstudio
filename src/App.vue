@@ -3,7 +3,6 @@
     <JdlStudio />
   </div>
 </template>
-
 <script>
 import JdlStudio from "./components/JdlStudio.vue";
 
@@ -26,7 +25,7 @@ body,
   text-align: left;
   color: #2c3e50;
   background: #151515;
-  margin-top: -25px;
+  margin-top: -15px;
 }
 body {
   margin: 0px;
