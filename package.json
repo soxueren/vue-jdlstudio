@@ -1,6 +1,6 @@
 {
   "name": "vue-jdlstudio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -38,7 +38,6 @@
     "codemirror": "^5.48.2",
     "core-js": "2.6.9",
     "dagre": "0.4.5",
-    "element-theme-chalk": "^2.11.1",
     "element-ui": "^2.11.1",
     "file-saver": "^2.0.0",
     "jhipster-core": "3.6.10",
