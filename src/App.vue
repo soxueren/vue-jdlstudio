@@ -25,7 +25,7 @@ body,
   text-align: left;
   color: #2c3e50;
   background: #151515;
-  margin-top: -15px;
+  margin-top: -25px;
 }
 body {
   margin: 0px;
