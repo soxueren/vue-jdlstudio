@@ -1,22 +1,5 @@
 <template>
   <div v-bind:class="[isActive? 'canvas-mode' : '', 'jdl-editor']">
-    <nav class="isFixed">
-      <el-form :inline="true">
-        <el-form-item label="ApplicationName">
-          <el-input
-            size="mini"
-            v-model="settings.baseName"
-            placeholder="please input Application Name"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label>
-          <a href="javascript:void(0);" @click="settingdialogVisiable=true">
-            <i class="el-icon-setting">setting</i>
-          </a>
-        </el-form-item>
-      </el-form>
-    </nav>
-
     <textarea id="textarea" ref="jdlcode" v-model="code"></textarea>
     <canvas
       id="canvas"
@@ -30,7 +13,6 @@
       @mouseleave="mouseUp"
       v-bind:style="{width:pannerStyle.w}"
     ></div>
-
     <div class="tools">
       <el-col :span="6">
         <el-upload
@@ -57,27 +39,15 @@
         </a>
       </el-col>
     </div>
-    <el-dialog title :visible.sync="settingdialogVisiable" width="30%" :before-close="handleClose">
-      <el-tabs type="border-card">
-        <el-tab-pane label="Application" name="first">
-          <!-- Application form -->
-        </el-tab-pane>
-        <el-tab-pane label="entities" name="second">
-          <!--entities form   -->
-        </el-tab-pane>
-        <el-tab-pane label="otherSettings" name="third">
-          <!-- otherSettings form -->
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="settingdialogVisiable = false">cancel</el-button>
-        <el-button type="primary" @click="settingdialogVisiable = false">save</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
 import Vue from "vue";
+import { mapState, mapGetters } from "vuex";
+import CodeMirror from "./lib/codemirror/codemirror.custom";
+import nomnoml from "./lib/nomnoml/nomnoml.custom";
+import skanaar from "./lib/nomnoml/shannar.custom";
+
 import "codemirror/theme/base16-dark.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/hint/show-hint.css";
@@ -88,18 +58,7 @@ import "./css/solarized.jdl.css";
 
 import _ from "lodash";
 import saveAs from "file-saver";
-
-import CodeMirror from "./js/codemirror/codemirror.custom";
-import nomnoml from "./js/nomnoml/nomnoml.custom";
-import skanaar from "./js/nomnoml/shannar.custom";
 import parser from "jhipster-core/lib/dsl/api";
-import {
-  DatabaseTypes,
-  ApplicationTypes,
-  convertToJHipsterJSON
-} from "jhipster-core";
-
-import JDLCore from "jhipster-core";
 
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/edit/matchbrackets";
@@ -126,17 +85,6 @@ export default {
         scrollbarStyle: "simple"
       },
 
-      code: `
-entity Region {
-  regionName String
-}
-entity Country {
-	countryName String
-}
-relationship OneToOne {
-	Country{region} to Region
-}
-            `,
       canvasElement: {},
       canvasStyle: {
         t: 0,
@@ -157,31 +105,31 @@ relationship OneToOne {
         y: 0
       },
       mouseDownPoint: false,
-      settings: {
-        baseName: "test",
-        applicationType: "microservice",
-        packageName: "com.test",
-        prodDatabaseType: "mysql",
-        devDatabaseType: "mysql",
-        buildTool: "maven",
-        cacheProvider: "hazelcast"
-      },
-      settingdialogVisiable: false,
-      editor: {},
       fileList: []
     };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      code: state => state.jdl.code,
+      editor: state => state.jdl.editor
+    }),
+    ...mapGetters({
+      editorValue: "editorValue"
+    })
+  },
   created() {},
   mounted() {
-    this.editor = CodeMirror.fromTextArea(this.$refs.jdlcode, this.cmOptions);
+    let editor = CodeMirror.fromTextArea(this.$refs.jdlcode, this.cmOptions);
     this.canvasElement = document.getElementById("canvas");
     this.canvasPanner = document.getElementById("canvas-panner");
-    this.editor.on("changes", _.debounce(this.sourceChanged, 300));
-    this.editor.setSize(
+    editor.on("changes", _.debounce(this.sourceChanged, 300));
+    editor.setSize(
       document.documentElement.clientWidth,
       document.documentElement.clientHeight * 0.95
     );
+    //更新editor
+    this.$store.commit("setEditor", editor);
+
     this.vm = skanaar.vector;
     window.addEventListener(
       "resize",
@@ -226,14 +174,10 @@ relationship OneToOne {
       try {
         let superSampling = window.devicePixelRatio || 1;
         let scale = superSampling * Math.exp(this.zoomLevel / 10);
-        let model = nomnoml.draw(
-          this.canvasElement,
-          this.editor.getValue(),
-          scale
-        );
+        let model = nomnoml.draw(this.canvasElement, this.editorValue, scale);
         this.positionCanvas(this.canvasElement, superSampling, this.offset);
         //save context
-        Vue.localStorage.set(this.settings.baseName, this.editor.getValue());
+
         //save file
       } catch (e) {
         console.error(e);
@@ -275,30 +219,25 @@ relationship OneToOne {
           console.log(data);
         }
         if (_.endsWith(file.name, ".jdl")) {
-          this.editor.setValue(data);
+          this.$store.commit("setEditorValue", data);
           //data->jdlobject
           data = data.replace(/\/\/[^\n\r]*/gm, "");
           let jdlObject = parser.parse(data);
-          console.log(jdlObject);
-          //TODO convert jdlObject to JSON
-          // let jdlconfig = {
-          //   jdlObject: jdlObject,
-          //   databaseType: JDLCore.JHipsterDatabaseTypes.MYSQL,
-          //   applicationType: JDLCore.JHipsterApplicationTypes.MICROSERVICE
-          // };
-          // convertToJHipsterJSON(jdlconfig);
+          this.$store.commit("setJdlObject", jdlObject);
         }
         this.fileList = [];
       };
     },
     addHandle() {},
     downHandle() {
-      let text = this.editor.getValue();
-      let blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      let blob = new Blob([this.editorValue], {
+        type: "text/plain;charset=utf-8"
+      });
       saveAs(blob, this.settings.baseName + ".jdl");
     },
     delHandle() {
-      this.editor.setValue("");
+      this.$store.commit("setEditorValue", "");
+      this.$store.commit("setJdlObject", {});
     },
     handleClose() {
       this.settingdialogVisiable = false;
