@@ -1,5 +1,6 @@
 export default {
   state: {
+    filename: "test.jdl",
     code: `
 entity Region {
   regionName String
@@ -21,13 +22,17 @@ relationship OneToOne {
   },
   actions: {},
   mutations: {
-    setEditor(state, editor) {
-      state.editor = editor;
+    setEditor(state, value) {
+      state.editor = value;
+    },
+    setFilename(state, value) {
+      state.filename = value;
     },
     setEditorValue(state, value) {
       state.editor.setValue(value);
     },
     setJdlObject(state, value) {
+      console.log(value);
       state.jdlObject = value;
     }
   }
