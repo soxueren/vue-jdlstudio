@@ -14,39 +14,24 @@
       v-bind:style="{width:pannerStyle.w}"
     ></div>
     <div class="tools">
-      <el-col :span="6">
-        <el-upload
-          ref="upload"
-          action="#"
-          :file-list="fileList"
-          :on-change="importHandle"
-          :auto-upload="false"
-        >
-          <a href="#">
-            <i class="el-icon-upload"></i>
-          </a>
-        </el-upload>
-      </el-col>
-      <el-col :span="18">
-        <a href="javascript:void(0);" @click="addHandle">
-          <i class="el-icon-plus"></i>
-        </a>
-        <a href="javascript:void(0);" @click="downHandle">
-          <i class="el-icon-download"></i>
-        </a>
-        <a href="javascript:void(0);" @click="delHandle">
-          <i class="el-icon-delete"></i>
-        </a>
-      </el-col>
+      <JdIImportor />
+      <JdlFormEditor />
+      <JdlExeutor />
+      <a href="javascript:void(0);" @click="downHandle">
+        <i class="el-icon-download"></i>
+      </a>
+      <a href="javascript:void(0);" @click="delHandle">
+        <i class="el-icon-delete"></i>
+      </a>
     </div>
   </div>
 </template>
 <script>
-import Vue from "vue";
 import { mapState, mapGetters } from "vuex";
 import CodeMirror from "./lib/codemirror/codemirror.custom";
 import nomnoml from "./lib/nomnoml/nomnoml.custom";
 import skanaar from "./lib/nomnoml/shannar.custom";
+import parser from "jhipster-core/lib/dsl/api";
 
 import "codemirror/theme/base16-dark.css";
 import "codemirror/lib/codemirror.css";
@@ -58,15 +43,22 @@ import "./css/solarized.jdl.css";
 
 import _ from "lodash";
 import saveAs from "file-saver";
-import parser from "jhipster-core/lib/dsl/api";
 
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/scroll/simplescrollbars";
 
+import JdIImportor from "./JdIImportor/JdIImportor.vue";
+import JdlFormEditor from "./JdlFormEditor/JdlFormEditor.vue";
+import JdlExeutor from "./JdlExeutor/JdlExeutor.vue";
 export default {
   name: "jdlstudio",
+  components: {
+    JdIImportor,
+    JdlFormEditor,
+    JdlExeutor
+  },
   data() {
     return {
       cmOptions: {
@@ -84,7 +76,6 @@ export default {
         },
         scrollbarStyle: "simple"
       },
-
       canvasElement: {},
       canvasStyle: {
         t: 0,
@@ -104,13 +95,13 @@ export default {
         x: 0,
         y: 0
       },
-      mouseDownPoint: false,
-      fileList: []
+      mouseDownPoint: false
     };
   },
   computed: {
     ...mapState({
       code: state => state.jdl.code,
+      filename: state => state.jdl.filename,
       editor: state => state.jdl.editor
     }),
     ...mapGetters({
@@ -129,6 +120,9 @@ export default {
     );
     //更新editor
     this.$store.commit("setEditor", editor);
+    //更新jdlObject
+    let jdlObject = parser.parse(this.editorValue);
+    this.$store.commit("setJdlObject", jdlObject);
 
     this.vm = skanaar.vector;
     window.addEventListener(
@@ -176,9 +170,6 @@ export default {
         let scale = superSampling * Math.exp(this.zoomLevel / 10);
         let model = nomnoml.draw(this.canvasElement, this.editorValue, scale);
         this.positionCanvas(this.canvasElement, superSampling, this.offset);
-        //save context
-
-        //save file
       } catch (e) {
         console.error(e);
       }
@@ -210,30 +201,11 @@ export default {
       this.mouseDownPoint = false;
       this.pannerStyle.w = "45%";
     },
-    importHandle(file, fileList) {
-      var reader = new FileReader();
-      reader.readAsText(file.raw, "UTF-8");
-      reader.onload = e => {
-        let data = e.currentTarget.result;
-        if (_.endsWith(file.name, ".json")) {
-          console.log(data);
-        }
-        if (_.endsWith(file.name, ".jdl")) {
-          this.$store.commit("setEditorValue", data);
-          //data->jdlobject
-          data = data.replace(/\/\/[^\n\r]*/gm, "");
-          let jdlObject = parser.parse(data);
-          this.$store.commit("setJdlObject", jdlObject);
-        }
-        this.fileList = [];
-      };
-    },
-    addHandle() {},
     downHandle() {
       let blob = new Blob([this.editorValue], {
         type: "text/plain;charset=utf-8"
       });
-      saveAs(blob, this.settings.baseName + ".jdl");
+      saveAs(blob, this.filename);
     },
     delHandle() {
       this.$store.commit("setEditorValue", "");
@@ -404,29 +376,5 @@ export default {
   color: white;
   font-size: 25px;
   margin: 0 10px;
-}
-.el-upload-list {
-  display: none;
-}
-.el-form-item__label {
-  color: #fdf6e3;
-  font-weight: 600;
-}
-.el-form-item a {
-  color: #fdf6e3;
-}
-.el-input--mini .el-input__inner {
-  background: rgb(0, 0, 0, 0);
-  border: 1px solid rgb(40, 44, 52);
-  color: aliceblue;
-}
-.el-dialog__body {
-  padding: 10px 20px;
-}
-.el-dialog__headerbtn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 20px;
 }
 </style>

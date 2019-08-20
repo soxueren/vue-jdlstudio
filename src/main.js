@@ -1,5 +1,4 @@
 import Vue from "vue";
-import ElementUI from "element-ui";
 
 import "element-ui/lib/theme-chalk/index.css";
 import App from "./App.vue";
@@ -17,8 +16,6 @@ import "jhipster-core";
 Vue.config.productionTip = false;
 
 Vue.use(VueBus);
-
-Vue.use(ElementUI);
 
 new Vue({
   store,
