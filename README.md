@@ -1,4 +1,6 @@
-# vue-jdlstudio - jdlstudio for Vue , JDL Studio is an online JHipster Domain Language visual editor
+# vue-jdlstudio
+
+jdlstudio for Vue , JDL Studio is an online JHipster Domain Language visual editor
 
 [JDL-Studio](https://github.com/jhipster/jdl-studio)
 
@@ -19,7 +21,7 @@ Hello, this is JDL-Studio with Vue, an online tool for drawing UML diagrams for 
 - 官方版基本功能移植到 vue-jdlstudio 组件
 - 增加 JDLObject 表单编辑器组件
 - 移植 jhipster-Online 前端功能到执行器组件
-- 移植 Jhipster-Online 后端服务到 node.js
+- 移植 Jhipster-Online 后端服务到 nodejs
 
 # Build
 
