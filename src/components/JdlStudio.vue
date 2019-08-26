@@ -14,15 +14,18 @@
       v-bind:style="{width:pannerStyle.w}"
     ></div>
     <div class="tools">
-      <JdIImportor />
-      <JdlFormEditor />
-      <JdlExeutor />
+      <a href="#" class="upload-input">
+        <i class="el-icon-upload"></i>
+        <input type="file" @change="importHandle" />
+      </a>
       <a href="javascript:void(0);" @click="downHandle">
         <i class="el-icon-download"></i>
       </a>
       <a href="javascript:void(0);" @click="delHandle">
         <i class="el-icon-delete"></i>
       </a>
+      <JdlFormEditor />
+      <JdlExeutor />
     </div>
   </div>
 </template>
@@ -49,13 +52,11 @@ import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/scroll/simplescrollbars";
 
-import JdIImportor from "./JdIImportor/JdIImportor.vue";
 import JdlFormEditor from "./JdlFormEditor/JdlFormEditor.vue";
 import JdlExeutor from "./JdlExeutor/JdlExeutor.vue";
 export default {
   name: "jdlstudio",
   components: {
-    JdIImportor,
     JdlFormEditor,
     JdlExeutor
   },
@@ -213,6 +214,25 @@ export default {
     },
     handleClose() {
       this.settingdialogVisiable = false;
+    },
+    importHandle(event) {
+      let file = event.target.files[0];
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = e => {
+        let data = e.currentTarget.result;
+        this.$store.commit("setFilename", file.name);
+        if (_.endsWith(file.name, ".json")) {
+          console.log(data);
+        }
+        if (_.endsWith(file.name, ".jdl")) {
+          this.$store.commit("setEditorValue", data);
+          //data->jdlobject
+          data = data.replace(/\/\/[^\n\r]*/gm, "");
+          let jdlObject = parser.parse(data);
+          this.$store.commit("setJdlObject", jdlObject);
+        }
+      };
     }
   }
 };
@@ -376,5 +396,25 @@ export default {
   color: white;
   font-size: 25px;
   margin: 0 10px;
+}
+.el-upload-list {
+  display: none;
+}
+.upload-input {
+  position: relative;
+  padding: 2px 2px;
+  overflow: hidden;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 20px;
+}
+.upload-input input {
+  position: absolute;
+  font-size: 100px;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
 }
 </style>
