@@ -20,8 +20,8 @@ Hello, this is JDL-Studio with Vue, an online tool for drawing UML diagrams for 
 - 增加 JDLObject 表单编辑器组件
 - 移植 jhipster-Online 配置选项到表单编辑器
 - 移植 jhipster-Online 生成功能到执行器组件
-- 移植 Jhipster-Online 后端服务到 nodejs
-
+- 移植 Jhipster-Online 后端服务到 jonlineApi(nodejs)
+- 整合 keyclock auth 到系统，完善登录
 # Build
 
 ```
