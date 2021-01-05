@@ -34,7 +34,7 @@
     "url": "git://gitlab.sjgs/jxw/vue-jdlstudio.git"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "codemirror": "^5.48.2",
     "core-js": "2.6.9",
     "dagre": "0.4.5",
